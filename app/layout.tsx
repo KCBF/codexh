@@ -3,8 +3,6 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import type { ReactNode } from "react"
 import { ClerkProvider } from "@clerk/nextjs"
-import { ReduxProvider } from "@/providers/ReduxProviders"
-import { Toaster } from "sonner"
 
 import './globals.css'
 import '@/styles/markdown.css'
@@ -23,16 +21,13 @@ export const metadata = {
 
 export default function Layout({ children }: { children: ReactNode }) {
   return (
-    <ReduxProvider>
-      <ClerkProvider afterSignOutUrl="/sign-in">
-        <html lang="en">
-          <body className={cn("flex min-h-svh flex-col antialiased", plusJakartaSans.variable)}>
-            <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
-            <Toaster />
-          </body>
-        </html>
-      </ClerkProvider>
-    </ReduxProvider>
+    <ClerkProvider afterSignOutUrl="/sign-in">
+      <html lang="en">
+        <body className={cn("antialiased", plusJakartaSans.variable)}>
+          <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+        </body>
+      </html>
+    </ClerkProvider>
   )
 }
 
