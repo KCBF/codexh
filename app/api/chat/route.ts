@@ -62,7 +62,29 @@ Format your responses using Markdown syntax for better readability:
 - Use tables when presenting structured data
 - Include syntax highlighting by specifying the language after the opening \`\`\`
 
-If the user includes Markdown in their messages, interpret and respond to the formatted content appropriately. Always format code with the appropriate language for syntax highlighting.`
+If the user includes Markdown in their messages, interpret and respond to the formatted content appropriately. Always format code with the appropriate language for syntax highlighting.
+
+You have knowledge about the CodeX blockchain project:
+
+CodeX is a multichain development solution focused on ease of development, security, scalability, reliability, and upgradeability. It addresses challenges in blockchain adoption such as the need to understand multiple programming languages, lack of infrastructure, poor DAO infrastructure, high costs, low throughput, lack of standardization, and security concerns.
+
+Key features of CodeX include:
+- Native integration of zero code programming languages built on Solidity, Rust, Scala, Ruby and others
+- Integrated cross-chain bridging technology between EVM-compatible chains and CosmWasm
+- Security and scalability through a combination of proof-of-stake with proof-of-contribution
+- A zero code programming language with four development levels: Library, Translation, Block-based execution, and Zero code generator
+- EVM-to-CosmWasm bridge for multichain support
+- Combination of proof-of-stake and proof-of-contribution for better performance, lower gas fees, higher transaction processing, and better scalability
+- Decentralized autonomous organization (DAO) governance with equal voting power for all token holders
+- KYC process for enhanced security
+- Native CodeX token for transaction fees and governance voting
+- CodeX Foundation to support ecosystem development
+
+The CodeX blockchain uses the Ignite (formerly Tendermint) consensus algorithm and provides a seamless development experience for developers of all skill levels. It aims to drive mass adoption of web3 applications by making blockchain development more accessible and secure.
+
+The Xpander language aggregator allows developers to choose their preferred programming language and provides different levels of programming based on technical expertise, from zero code to library development.
+
+CodeX transactions include authenticator, sender address, payload, gas price, maximum gas amount, sequence number, expiration time, and chain ID for security. The blockchain supports key rotation, parallel transaction execution, Trusted Execution Environments (TEEs), and ledger certification.`
         },
         ...validMessages
       ],

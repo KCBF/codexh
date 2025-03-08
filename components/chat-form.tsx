@@ -1,7 +1,7 @@
 "use client"
 
 import type React from "react"
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import ReactMarkdown from "react-markdown"
 import rehypeRaw from "rehype-raw"
 import rehypeSanitize from "rehype-sanitize"
@@ -26,6 +26,16 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
+
+  // Add welcome message when component mounts
+  useEffect(() => {
+    setMessages([
+      {
+        role: "assistant",
+        content: "# Welcome to the CodeX AI Assistant! 👋\n\nI'm here to help you with information about the **CodeX blockchain** project and answer any questions you might have. CodeX is a multichain development solution focused on ease of development, security, scalability, and reliability.\n\nSome topics I can help with:\n- Zero code programming language\n- EVM-to-CosmWasm bridging\n- Proof-of-stake and proof-of-contribution\n- DAO governance\n- Xpander language aggregator\n\nFeel free to ask me anything! Both of us can use **Markdown** in our messages."
+      }
+    ])
+  }, [])
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
@@ -101,13 +111,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
 
   const header = (
     <header className="m-auto flex max-w-96 flex-col gap-5 text-center">
-      <h1 className="text-2xl font-semibold leading-none tracking-tight">Azure OpenAI Chatbot</h1>
+      <h1 className="text-2xl font-semibold leading-none tracking-tight">CodeX AI Assistant</h1>
       <p className="text-muted-foreground text-sm">
-        This is an AI chatbot app built with <span className="text-foreground">Next.js</span> and{" "}
-        <span className="text-foreground">Azure OpenAI</span>.
+        This AI assistant is knowledgeable about the <span className="text-foreground">CodeX blockchain</span> project and can answer your questions about blockchain technology.
       </p>
       <p className="text-muted-foreground text-sm">
-        Send a message to start chatting with the AI assistant. <strong>Markdown is supported in both user and AI messages!</strong>
+        Send a message to start chatting. <strong>Markdown is supported in both user and AI messages!</strong>
       </p>
     </header>
   )
@@ -169,7 +178,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
             onKeyDown={handleKeyDown}
             onChange={(value) => setInput(value)}
             value={input || ""}
-            placeholder="Enter a message (Markdown supported)"
+            placeholder="Ask about CodeX blockchain (Markdown supported)"
             className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
             disabled={isLoading}
           />
