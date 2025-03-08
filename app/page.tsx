@@ -1,10 +1,36 @@
 'use client';
-import React from 'react';
+import React, { useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
+import { wordsList } from '@/lib/words-data';
+import { useRouter } from 'next/navigation';
 
 export default function Page() {
+  const [searchTerm, setSearchTerm] = useState('');
+  const [searchResults, setSearchResults] = useState<typeof wordsList>([]);
+  const [showResults, setShowResults] = useState(false);
+  const router = useRouter();
+
+  const handleSearch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (searchTerm.trim() === '') {
+      setSearchResults([]);
+      setShowResults(false);
+      return;
+    }
+
+    const results = wordsList.filter(word => 
+      word.word.toLowerCase().includes(searchTerm.toLowerCase())
+    );
+    setSearchResults(results);
+    setShowResults(true);
+  };
+
+  const handleWordClick = (word: string) => {
+    router.push(`/word/${word}`);
+  };
+
   return (
     <div className="flex h-screen">
       {/* Sidebar */}
@@ -59,16 +85,23 @@ export default function Page() {
         {/* Header */}
         <header className="h-[80px] border-b flex items-center justify-between px-6">
           <div className="relative w-full max-w-[600px]">
-            <input 
-              type="text" 
-              placeholder="Enter your search term..." 
-              className="w-full h-[40px] pl-4 pr-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300"
-            />
-            <button className="absolute right-3 top-1/2 transform -translate-y-1/2">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-              </svg>
-            </button>
+            <form onSubmit={handleSearch}>
+              <input 
+                type="text" 
+                placeholder="Enter your search term..." 
+                className="w-full h-[40px] pl-4 pr-10 border rounded-full focus:outline-none focus:ring-2 focus:ring-purple-300"
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
+              />
+              <button 
+                type="submit"
+                className="absolute right-3 top-1/2 transform -translate-y-1/2"
+              >
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                </svg>
+              </button>
+            </form>
           </div>
           <div className="flex items-center gap-4">
             <button className="relative">
@@ -83,43 +116,109 @@ export default function Page() {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 bg-[#E6F7EC] p-8">
-          <div className="max-w-6xl mx-auto">
-            <div className="flex items-center justify-between">
-              <div className="max-w-xl">
-                <h1 className="text-5xl font-bold text-gray-900 mb-6">VOCAKE LEARNING</h1>
-                <p className="text-2xl text-gray-700 mb-8">Find new words and master their meanings with ease</p>
-                
-                <div className="flex items-center">
-                  <div className="relative flex-1 max-w-md">
-                    <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
-                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-                      </svg>
+        <main className="flex-1 bg-[#E6F7EC] p-8 overflow-y-auto">
+          {showResults ? (
+            <div className="max-w-6xl mx-auto">
+              <h2 className="text-2xl font-bold mb-6">Search Results for "{searchTerm}"</h2>
+              
+              {searchResults.length > 0 ? (
+                <div className="bg-white rounded-lg shadow-md p-6">
+                  <ul className="divide-y">
+                    {searchResults.map((word) => (
+                      <li 
+                        key={word.id} 
+                        className="py-4 cursor-pointer hover:bg-gray-50"
+                        onClick={() => handleWordClick(word.word)}
+                      >
+                        <div className="flex items-start">
+                          <div>
+                            <h3 className="text-xl font-bold">{word.word}</h3>
+                            <p className="text-gray-500 text-sm">{word.type} • {word.pronunciation.uk}</p>
+                            <p className="mt-1">{word.definitions[0].meaning}</p>
+                          </div>
+                          <span className="ml-auto text-purple-600 font-medium">View</span>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ) : (
+                <div className="bg-white rounded-lg shadow-md p-6 text-center">
+                  <p className="text-gray-500">No results found for "{searchTerm}"</p>
+                </div>
+              )}
+              
+              <button 
+                className="mt-6 text-purple-600 font-medium flex items-center"
+                onClick={() => setShowResults(false)}
+              >
+                <svg className="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path>
+                </svg>
+                Back to Home
+              </button>
+            </div>
+          ) : (
+            <div className="max-w-6xl mx-auto">
+              <div className="flex items-center justify-between">
+                <div className="max-w-xl">
+                  <h1 className="text-5xl font-bold text-gray-900 mb-6">VOCAKE LEARNING</h1>
+                  <p className="text-2xl text-gray-700 mb-8">Find new words and master their meanings with ease</p>
+                  
+                  <form onSubmit={handleSearch} className="flex items-center">
+                    <div className="relative flex-1 max-w-md">
+                      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                      </div>
+                      <input 
+                        type="text" 
+                        placeholder="Search Vocabulary" 
+                        className="w-full h-[50px] pl-12 pr-4 rounded-l-full border-0 focus:outline-none focus:ring-0"
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                      />
                     </div>
-                    <input 
-                      type="text" 
-                      placeholder="Search Vocabulary" 
-                      className="w-full h-[50px] pl-12 pr-4 rounded-l-full border-0 focus:outline-none focus:ring-0"
-                    />
-                  </div>
-                  <button className="h-[50px] px-6 bg-[#FF7A2F] text-white font-medium rounded-r-full">
-                    English - Vietnamese
-                  </button>
+                    <button 
+                      type="submit"
+                      className="h-[50px] px-6 bg-[#FF7A2F] text-white font-medium rounded-r-full"
+                    >
+                      English - Vietnamese
+                    </button>
+                  </form>
+                </div>
+                
+                <div className="hidden md:block">
+                  <Image 
+                    src="/asset/Group 48095851.png" 
+                    alt="Learning illustration" 
+                    width={400} 
+                    height={300}
+                    className="object-contain"
+                  />
                 </div>
               </div>
-              
-              <div className="hidden md:block">
-                <Image 
-                  src="/asset/Group 48095851.png" 
-                  alt="Learning illustration" 
-                  width={400} 
-                  height={300}
-                  className="object-contain"
-                />
+
+              {/* Popular Words Section */}
+              <div className="mt-16">
+                <h2 className="text-2xl font-bold mb-6">Popular Words</h2>
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {wordsList.slice(0, 6).map((word) => (
+                    <div 
+                      key={word.id} 
+                      className="bg-white p-4 rounded-lg shadow-sm cursor-pointer hover:shadow-md transition-shadow"
+                      onClick={() => handleWordClick(word.word)}
+                    >
+                      <h3 className="text-xl font-bold">{word.word}</h3>
+                      <p className="text-gray-500 text-sm">{word.type} • {word.level}</p>
+                      <p className="mt-2 text-gray-700 line-clamp-2">{word.definitions[0].meaning}</p>
+                    </div>
+                  ))}
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </main>
       </div>
     </div>
