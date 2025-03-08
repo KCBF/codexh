@@ -39,22 +39,33 @@ export const DEFAULT_US_VOICE = ELEVENLABS_VOICES.US.FEMALE.RACHEL;
  * @returns Promise with audio blob
  */
 export async function generateWordAudio(word: string, voiceId: string): Promise<Blob> {
-  const response = await fetch('/api/elevenlabs', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({
-      text: word,
-      voice_id: voiceId,
-    }),
-  });
+  try {
+    const response = await fetch('/api/elevenlabs', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        text: word,
+        voice_id: voiceId,
+      }),
+    });
 
-  if (!response.ok) {
-    throw new Error(`Failed to generate audio: ${response.status}`);
+    if (!response.ok) {
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please try again in a moment.');
+      } else {
+        const errorText = await response.text();
+        console.error('ElevenLabs API error:', errorText);
+        throw new Error(`Failed to generate audio: ${response.status}`);
+      }
+    }
+
+    return await response.blob();
+  } catch (error) {
+    console.error('Error in generateWordAudio:', error);
+    throw error;
   }
-
-  return await response.blob();
 }
 
 /**

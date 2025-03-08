@@ -1,10 +1,10 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, use } from 'react';
 import { wordsList } from '@/lib/words-data';
 import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
-import { Volume2, Loader2, AlertCircle } from 'lucide-react';
+import { Volume2, Loader2, AlertCircle, RefreshCw } from 'lucide-react';
 import { 
   DEFAULT_UK_VOICE, 
   DEFAULT_US_VOICE, 
@@ -12,14 +12,22 @@ import {
   createAudioFromBlob 
 } from '@/lib/elevenlabs';
 
+// Simple in-memory audio cache
+const audioCache: Record<string, Blob> = {};
+
 export default function WordPage({ params }: { params: { word: string } }) {
+  // Unwrap params using use() hook
+  const unwrappedParams = use(params as any) as { word: string };
+  const wordParam = unwrappedParams.word;
+  
   const [activeTab, setActiveTab] = useState<'collocations' | 'wordFamily' | 'synonyms'>('collocations');
-  const [wordData, setWordData] = useState(wordsList.find(w => w.word.toLowerCase() === params.word.toLowerCase()));
+  const [wordData, setWordData] = useState(wordsList.find(w => w.word.toLowerCase() === wordParam.toLowerCase()));
   const [ukAudio, setUkAudio] = useState<HTMLAudioElement | null>(null);
   const [usAudio, setUsAudio] = useState<HTMLAudioElement | null>(null);
   const [isUkLoading, setIsUkLoading] = useState(false);
   const [isUsLoading, setIsUsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [retryCount, setRetryCount] = useState({ uk: 0, us: 0 });
 
   // Clear error after 5 seconds
   useEffect(() => {
@@ -36,46 +44,98 @@ export default function WordPage({ params }: { params: { word: string } }) {
     if (wordData) {
       // Preload UK audio
       generateUkAudio(false);
-      // Preload US audio
-      generateUsAudio(false);
+      // Preload US audio with a slight delay to avoid rate limiting
+      const timer = setTimeout(() => {
+        generateUsAudio(false);
+      }, 1000);
+      
+      return () => clearTimeout(timer);
     }
   }, [wordData]);
 
-  // Function to generate audio for UK pronunciation
+  // Function to generate audio for UK pronunciation with caching
   const generateUkAudio = async (shouldPlay = true) => {
     if (!wordData) return;
     
+    const cacheKey = `${wordData.word}-uk`;
     setIsUkLoading(true);
+    
     try {
+      // Check cache first
+      if (audioCache[cacheKey]) {
+        const audio = createAudioFromBlob(audioCache[cacheKey]);
+        setUkAudio(audio);
+        if (shouldPlay) {
+          audio.play();
+        }
+        setIsUkLoading(false);
+        return;
+      }
+      
       const audioBlob = await generateWordAudio(wordData.word, DEFAULT_UK_VOICE);
+      
+      // Cache the audio
+      audioCache[cacheKey] = audioBlob;
+      
       const audio = createAudioFromBlob(audioBlob);
       setUkAudio(audio);
       if (shouldPlay) {
         audio.play();
       }
+      
+      // Reset retry count on success
+      setRetryCount(prev => ({ ...prev, uk: 0 }));
     } catch (error) {
       console.error('Error generating UK audio:', error);
-      setError('Failed to generate UK audio. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate UK audio';
+      setError(errorMessage);
+      
+      // Increment retry count
+      setRetryCount(prev => ({ ...prev, uk: prev.uk + 1 }));
     } finally {
       setIsUkLoading(false);
     }
   };
 
-  // Function to generate audio for US pronunciation
+  // Function to generate audio for US pronunciation with caching
   const generateUsAudio = async (shouldPlay = true) => {
     if (!wordData) return;
     
+    const cacheKey = `${wordData.word}-us`;
     setIsUsLoading(true);
+    
     try {
+      // Check cache first
+      if (audioCache[cacheKey]) {
+        const audio = createAudioFromBlob(audioCache[cacheKey]);
+        setUsAudio(audio);
+        if (shouldPlay) {
+          audio.play();
+        }
+        setIsUsLoading(false);
+        return;
+      }
+      
       const audioBlob = await generateWordAudio(wordData.word, DEFAULT_US_VOICE);
+      
+      // Cache the audio
+      audioCache[cacheKey] = audioBlob;
+      
       const audio = createAudioFromBlob(audioBlob);
       setUsAudio(audio);
       if (shouldPlay) {
         audio.play();
       }
+      
+      // Reset retry count on success
+      setRetryCount(prev => ({ ...prev, us: 0 }));
     } catch (error) {
       console.error('Error generating US audio:', error);
-      setError('Failed to generate US audio. Please try again.');
+      const errorMessage = error instanceof Error ? error.message : 'Failed to generate US audio';
+      setError(errorMessage);
+      
+      // Increment retry count
+      setRetryCount(prev => ({ ...prev, us: prev.us + 1 }));
     } finally {
       setIsUsLoading(false);
     }
@@ -84,7 +144,11 @@ export default function WordPage({ params }: { params: { word: string } }) {
   // Play UK audio
   const playUkAudio = () => {
     if (ukAudio) {
-      ukAudio.play().catch(e => console.error('Error playing UK audio:', e));
+      ukAudio.play().catch(e => {
+        console.error('Error playing UK audio:', e);
+        setError('Error playing audio. Trying to regenerate...');
+        generateUkAudio(true);
+      });
     } else {
       generateUkAudio(true);
     }
@@ -93,7 +157,11 @@ export default function WordPage({ params }: { params: { word: string } }) {
   // Play US audio
   const playUsAudio = () => {
     if (usAudio) {
-      usAudio.play().catch(e => console.error('Error playing US audio:', e));
+      usAudio.play().catch(e => {
+        console.error('Error playing US audio:', e);
+        setError('Error playing audio. Trying to regenerate...');
+        generateUsAudio(true);
+      });
     } else {
       generateUsAudio(true);
     }
@@ -104,7 +172,7 @@ export default function WordPage({ params }: { params: { word: string } }) {
       <div className="flex h-screen items-center justify-center bg-gray-100">
         <div className="bg-white p-8 rounded-lg shadow-md text-center">
           <h1 className="text-2xl font-bold text-red-500 mb-4">Word Not Found</h1>
-          <p className="mb-6">Sorry, we couldn't find the word "{params.word}".</p>
+          <p className="mb-6">Sorry, we couldn't find the word "{wordParam}".</p>
           <Link href="/" className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
             Return to Home
           </Link>
@@ -226,6 +294,8 @@ export default function WordPage({ params }: { params: { word: string } }) {
                     >
                       {isUkLoading ? (
                         <Loader2 className="text-[#5E89ED] animate-spin" size={24} />
+                      ) : retryCount.uk > 0 ? (
+                        <RefreshCw className="text-[#5E89ED]" size={24} />
                       ) : (
                         <Volume2 className="text-[#5E89ED]" size={24} />
                       )}
@@ -243,6 +313,8 @@ export default function WordPage({ params }: { params: { word: string } }) {
                     >
                       {isUsLoading ? (
                         <Loader2 className="text-[#E83080] animate-spin" size={24} />
+                      ) : retryCount.us > 0 ? (
+                        <RefreshCw className="text-[#E83080]" size={24} />
                       ) : (
                         <Volume2 className="text-[#E83080]" size={24} />
                       )}
