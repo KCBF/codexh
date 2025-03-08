@@ -32,7 +32,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     setMessages([
       {
         role: "assistant",
-        content: "# Welcome to the CodeX AI Assistant! 👋\n\nI'm here to help you with information about the **CodeX blockchain** project and answer any questions you might have. CodeX is a multichain development solution focused on ease of development, security, scalability, and reliability.\n\nSome topics I can help with:\n- Zero code programming language\n- EVM-to-CosmWasm bridging\n- Proof-of-stake and proof-of-contribution\n- DAO governance\n- Xpander language aggregator\n\nFeel free to ask me anything! Both of us can use **Markdown** in our messages."
+        content: "# Welcome to the CodeX AI Assistant! 👋\n\nI'm here to help you with information about the **CodeX blockchain** project and answer any questions you might have. CodeX is a multichain development solution focused on ease of development, security, scalability, and reliability.\n\nSome topics I can help with:\n- Zero code programming language\n- EVM-to-CosmWasm bridging\n- Proof-of-stake and proof-of-contribution\n- DAO governance\n- Xpander language aggregator\n- Team information and partnerships\n- Company history and recent updates\n\nCodeX was founded in August 2021 in Dubai, UAE, and is led by CEO Bello Andrea, CMO Ika Afifah, and Co-CTO Jason Galvin.\n\nFeel free to ask me anything! Both of us can use **Markdown** in our messages."
       }
     ])
   }, [])

@@ -84,7 +84,31 @@ The CodeX blockchain uses the Ignite (formerly Tendermint) consensus algorithm a
 
 The Xpander language aggregator allows developers to choose their preferred programming language and provides different levels of programming based on technical expertise, from zero code to library development.
 
-CodeX transactions include authenticator, sender address, payload, gas price, maximum gas amount, sequence number, expiration time, and chain ID for security. The blockchain supports key rotation, parallel transaction execution, Trusted Execution Environments (TEEs), and ledger certification.`
+CodeX transactions include authenticator, sender address, payload, gas price, maximum gas amount, sequence number, expiration time, and chain ID for security. The blockchain supports key rotation, parallel transaction execution, Trusted Execution Environments (TEEs), and ledger certification.
+
+## Company and Team Information
+
+CodeXchain (also known as CodeX) is an all-in-one no-code AI powered ecosystem for WEB3 mass adoption. The company was founded in August 2021 and is based in Dubai, United Arab Emirates.
+
+### Key Team Members:
+- **Bello Andrea** - CEO of CodeXchain, previously served as the CTO of Bictory Finance. He graduated from the Swiss University of Applied Sciences (SUPSI).
+- **Ika Afifah** - Co-Founder & CMO at CodeXchain. She is a Serial Entrepreneur & Angel Investor.
+- **Jason Galvin** - Co-CTO at both WeFund and CodeX.
+
+### Company Description:
+CodeXchain describes itself as "The ultimate no-code AI platform for Web2 & Web3—build websites, dApps, games, and more with just a chat prompt!" The platform has been accelerated by Internet Computer & Spores Network.
+
+### Recent Updates & Partnerships:
+- **AI Agent Hackathon** in Ho Chi Minh, Vietnam (March 7-9, 2025) focusing on No-code AI x Web3 innovation with bounties and networking opportunities.
+- **Partnerships & Integrations**:
+  - SoloDePIN - Revolutionizing token distribution with mining-centric tokenomics
+  - Suci Community Vietnam Build Week - AI Hackathon 2025
+  - COTI network - Collaborating on Web3 projects
+  - EdgexAI - Advancing Web3 edge computing
+
+### Online Presence:
+- Website: codexchain.xyz
+- Social media following: 34.6K followers`
         },
         ...validMessages
       ],
