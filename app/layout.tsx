@@ -3,6 +3,7 @@ import { TooltipProvider } from "@/components/ui/tooltip"
 import { Plus_Jakarta_Sans } from "next/font/google"
 import type { ReactNode } from "react"
 import { ClerkProvider } from "@clerk/nextjs"
+import WalletProvider from "@/providers/WalletProvider"
 
 import './globals.css'
 import '@/styles/markdown.css'
@@ -24,7 +25,11 @@ export default function Layout({ children }: { children: ReactNode }) {
     <ClerkProvider afterSignOutUrl="/sign-in">
       <html lang="en">
         <body className={cn("antialiased", plusJakartaSans.variable)}>
-          <TooltipProvider delayDuration={0}>{children}</TooltipProvider>
+          <TooltipProvider delayDuration={0}>
+            <WalletProvider>
+              {children}
+            </WalletProvider>
+          </TooltipProvider>
         </body>
       </html>
     </ClerkProvider>
