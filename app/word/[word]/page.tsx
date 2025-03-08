@@ -4,25 +4,98 @@ import React, { useState, useEffect } from 'react';
 import { wordsList } from '@/lib/words-data';
 import Link from 'next/link';
 import { UserButton } from '@clerk/nextjs';
-import { Volume2 } from 'lucide-react';
+import { Volume2, Loader2, AlertCircle } from 'lucide-react';
+import { 
+  DEFAULT_UK_VOICE, 
+  DEFAULT_US_VOICE, 
+  generateWordAudio, 
+  createAudioFromBlob 
+} from '@/lib/elevenlabs';
 
 export default function WordPage({ params }: { params: { word: string } }) {
   const [activeTab, setActiveTab] = useState<'collocations' | 'wordFamily' | 'synonyms'>('collocations');
   const [wordData, setWordData] = useState(wordsList.find(w => w.word.toLowerCase() === params.word.toLowerCase()));
-  const [audio, setAudio] = useState<HTMLAudioElement | null>(null);
+  const [ukAudio, setUkAudio] = useState<HTMLAudioElement | null>(null);
+  const [usAudio, setUsAudio] = useState<HTMLAudioElement | null>(null);
+  const [isUkLoading, setIsUkLoading] = useState(false);
+  const [isUsLoading, setIsUsLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
+  // Clear error after 5 seconds
   useEffect(() => {
-    if (wordData?.pronunciation) {
-      // In a real app, this would be a real audio URL
-      const dummyAudioUrl = 'https://dictionary.cambridge.org/media/english/uk_pron/u/ukw/ukwor/ukworki013.mp3';
-      const newAudio = new Audio(dummyAudioUrl);
-      setAudio(newAudio);
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null);
+      }, 5000);
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  // Preload audio when the component mounts
+  useEffect(() => {
+    if (wordData) {
+      // Preload UK audio
+      generateUkAudio(false);
+      // Preload US audio
+      generateUsAudio(false);
     }
   }, [wordData]);
 
-  const playAudio = () => {
-    if (audio) {
-      audio.play().catch(e => console.error('Error playing audio:', e));
+  // Function to generate audio for UK pronunciation
+  const generateUkAudio = async (shouldPlay = true) => {
+    if (!wordData) return;
+    
+    setIsUkLoading(true);
+    try {
+      const audioBlob = await generateWordAudio(wordData.word, DEFAULT_UK_VOICE);
+      const audio = createAudioFromBlob(audioBlob);
+      setUkAudio(audio);
+      if (shouldPlay) {
+        audio.play();
+      }
+    } catch (error) {
+      console.error('Error generating UK audio:', error);
+      setError('Failed to generate UK audio. Please try again.');
+    } finally {
+      setIsUkLoading(false);
+    }
+  };
+
+  // Function to generate audio for US pronunciation
+  const generateUsAudio = async (shouldPlay = true) => {
+    if (!wordData) return;
+    
+    setIsUsLoading(true);
+    try {
+      const audioBlob = await generateWordAudio(wordData.word, DEFAULT_US_VOICE);
+      const audio = createAudioFromBlob(audioBlob);
+      setUsAudio(audio);
+      if (shouldPlay) {
+        audio.play();
+      }
+    } catch (error) {
+      console.error('Error generating US audio:', error);
+      setError('Failed to generate US audio. Please try again.');
+    } finally {
+      setIsUsLoading(false);
+    }
+  };
+
+  // Play UK audio
+  const playUkAudio = () => {
+    if (ukAudio) {
+      ukAudio.play().catch(e => console.error('Error playing UK audio:', e));
+    } else {
+      generateUkAudio(true);
+    }
+  };
+
+  // Play US audio
+  const playUsAudio = () => {
+    if (usAudio) {
+      usAudio.play().catch(e => console.error('Error playing US audio:', e));
+    } else {
+      generateUsAudio(true);
     }
   };
 
@@ -117,7 +190,15 @@ export default function WordPage({ params }: { params: { word: string } }) {
         </header>
 
         {/* Main Content Area */}
-        <main className="flex-1 bg-white p-8 overflow-y-auto">
+        <main className="flex-1 bg-white p-8 overflow-y-auto relative">
+          {/* Error Toast */}
+          {error && (
+            <div className="fixed top-4 right-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded flex items-center shadow-md z-50">
+              <AlertCircle className="mr-2" size={20} />
+              <span>{error}</span>
+            </div>
+          )}
+
           <div className="max-w-4xl mx-auto">
             <div className="flex flex-col md:flex-row md:items-start md:justify-between">
               <div className="flex-1">
@@ -138,8 +219,16 @@ export default function WordPage({ params }: { params: { word: string } }) {
                 <div className="mb-6">
                   <div className="flex gap-2 items-center mb-2">
                     <p className="text-[24px] font-semibold text-[#5E89ED]">UK</p>
-                    <button onClick={playAudio} className="cursor-pointer">
-                      <Volume2 className="text-[#5E89ED]" size={24} />
+                    <button 
+                      onClick={playUkAudio} 
+                      className="cursor-pointer flex items-center justify-center w-8 h-8"
+                      disabled={isUkLoading}
+                    >
+                      {isUkLoading ? (
+                        <Loader2 className="text-[#5E89ED] animate-spin" size={24} />
+                      ) : (
+                        <Volume2 className="text-[#5E89ED]" size={24} />
+                      )}
                     </button>
                     <p className="text-[24px] font-medium text-[#757575]">
                       {wordData.pronunciation.uk}
@@ -147,8 +236,16 @@ export default function WordPage({ params }: { params: { word: string } }) {
                   </div>
                   <div className="flex gap-2 items-center">
                     <p className="text-[24px] font-semibold text-[#E83080]">US</p>
-                    <button onClick={playAudio} className="cursor-pointer">
-                      <Volume2 className="text-[#E83080]" size={24} />
+                    <button 
+                      onClick={playUsAudio} 
+                      className="cursor-pointer flex items-center justify-center w-8 h-8"
+                      disabled={isUsLoading}
+                    >
+                      {isUsLoading ? (
+                        <Loader2 className="text-[#E83080] animate-spin" size={24} />
+                      ) : (
+                        <Volume2 className="text-[#E83080]" size={24} />
+                      )}
                     </button>
                     <p className="text-[24px] font-medium text-[#757575]">
                       {wordData.pronunciation.us}
