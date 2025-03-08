@@ -2,9 +2,13 @@ import { streamText } from "ai"
 import OpenAI from "openai"
 
 // Create a custom fetch function for Azure OpenAI
-const customFetch = (url: string, options: RequestInit = {}) => {
+const customFetch = async (
+  url: RequestInfo | URL,
+  options: RequestInit = {}
+): Promise<Response> => {
   // Extract the path from the URL
-  const urlObj = new URL(url);
+  const urlString = url.toString();
+  const urlObj = new URL(urlString);
   const path = urlObj.pathname + urlObj.search;
   
   // Construct the Azure OpenAI URL
@@ -25,7 +29,7 @@ const customFetch = (url: string, options: RequestInit = {}) => {
 const openaiClient = new OpenAI({
   apiKey: process.env.AZURE_OPENAI_API_KEY || '',
   baseURL: process.env.AZURE_OPENAI_ENDPOINT,
-  fetch: customFetch,
+  fetch: customFetch as unknown as typeof fetch,
 });
 
 export async function POST(req: Request) {
