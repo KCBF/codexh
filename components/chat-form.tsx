@@ -2,6 +2,11 @@
 
 import type React from "react"
 import { useState } from "react"
+import ReactMarkdown from "react-markdown"
+import rehypeRaw from "rehype-raw"
+import rehypeSanitize from "rehype-sanitize"
+import rehypeHighlight from "rehype-highlight"
+import remarkGfm from "remark-gfm"
 
 import { cn } from "@/lib/utils"
 
@@ -102,7 +107,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
         <span className="text-foreground">Azure OpenAI</span>.
       </p>
       <p className="text-muted-foreground text-sm">
-        Send a message to start chatting with the AI assistant.
+        Send a message to start chatting with the AI assistant. <strong>Markdown is supported in both user and AI messages!</strong>
       </p>
     </header>
   )
@@ -113,9 +118,24 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
         <div
           key={index}
           data-role={message.role || "user"}
-          className="max-w-[80%] rounded-xl px-3 py-2 text-sm data-[role=assistant]:self-start data-[role=user]:self-end data-[role=assistant]:bg-gray-100 data-[role=user]:bg-blue-500 data-[role=assistant]:text-black data-[role=user]:text-white"
+          className={cn(
+            "rounded-xl px-4 py-3 text-sm",
+            message.role === "assistant" 
+              ? "self-start max-w-[85%] bg-gray-100 text-black" 
+              : "self-end max-w-[75%] bg-blue-500 text-white"
+          )}
         >
-          {message.content || ""}
+          <div className={cn(
+            "prose prose-sm max-w-none",
+            message.role === "assistant" ? "prose" : "prose-invert"
+          )}>
+            <ReactMarkdown
+              remarkPlugins={[remarkGfm]}
+              rehypePlugins={[rehypeRaw, rehypeSanitize, rehypeHighlight]}
+            >
+              {message.content || ""}
+            </ReactMarkdown>
+          </div>
         </div>
       ))}
       {error && (
@@ -149,7 +169,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
             onKeyDown={handleKeyDown}
             onChange={(value) => setInput(value)}
             value={input || ""}
-            placeholder="Enter a message"
+            placeholder="Enter a message (Markdown supported)"
             className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
             disabled={isLoading}
           />

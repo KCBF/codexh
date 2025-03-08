@@ -47,7 +47,23 @@ export async function POST(req: Request) {
     const stream = await openaiClient.chat.completions.create({
       model: process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',
       messages: [
-        { role: 'system', content: 'You are a helpful assistant.' },
+        { 
+          role: 'system', 
+          content: `You are a helpful assistant. Both you and the user can use Markdown formatting in messages.
+
+Format your responses using Markdown syntax for better readability:
+- Use **bold** for emphasis
+- Use *italics* for subtle emphasis
+- Use \`code\` for inline code
+- Use \`\`\` code blocks for multi-line code with language specification
+- Use > for quotes
+- Use bullet points and numbered lists where appropriate
+- Use headings with # for organizing information
+- Use tables when presenting structured data
+- Include syntax highlighting by specifying the language after the opening \`\`\`
+
+If the user includes Markdown in their messages, interpret and respond to the formatted content appropriately. Always format code with the appropriate language for syntax highlighting.`
+        },
         ...validMessages
       ],
       stream: true,
