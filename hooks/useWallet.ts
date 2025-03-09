@@ -20,7 +20,6 @@ export interface WalletState {
   chainId: string | null;
   provider: ethers.providers.Web3Provider | null;
   signer: ethers.Signer | null;
-  isCorrectNetwork: boolean;
 }
 
 export const useWallet = () => {
@@ -30,7 +29,6 @@ export const useWallet = () => {
     chainId: null,
     provider: null,
     signer: null,
-    isCorrectNetwork: false,
   });
   const [isConnecting, setIsConnecting] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -39,12 +37,6 @@ export const useWallet = () => {
   const checkIfMetaMaskIsInstalled = useCallback((): boolean => {
     const { ethereum } = window as any;
     return Boolean(ethereum && ethereum.isMetaMask);
-  }, []);
-
-  // Check if connected to COTI Testnet
-  const checkIfCorrectNetwork = useCallback((chainIdHex: string): boolean => {
-    // Normalize chain IDs to lowercase for comparison
-    return chainIdHex.toLowerCase() === COTI_TESTNET.chainId.toLowerCase();
   }, []);
 
   // Check current network and update state
@@ -65,7 +57,6 @@ export const useWallet = () => {
         const { chainId } = await provider.getNetwork();
         const chainIdHex = `0x${chainId.toString(16)}`;
         const signer = provider.getSigner();
-        const isCorrectNetwork = checkIfCorrectNetwork(chainIdHex);
         
         setWalletState({
           isConnected: true,
@@ -73,13 +64,12 @@ export const useWallet = () => {
           chainId: chainIdHex,
           provider,
           signer,
-          isCorrectNetwork,
         });
       }
     } catch (err) {
       console.error('Error checking current network:', err);
     }
-  }, [checkIfMetaMaskIsInstalled, checkIfCorrectNetwork]);
+  }, [checkIfMetaMaskIsInstalled]);
 
   // Connect to MetaMask
   const connectWallet = useCallback(async () => {
@@ -106,9 +96,6 @@ export const useWallet = () => {
       
       // Get signer
       const signer = provider.getSigner();
-      
-      // Check if connected to COTI Testnet
-      const isCorrectNetwork = checkIfCorrectNetwork(chainIdHex);
 
       setWalletState({
         isConnected: true,
@@ -116,7 +103,6 @@ export const useWallet = () => {
         chainId: chainIdHex,
         provider,
         signer,
-        isCorrectNetwork,
       });
       
       setIsConnecting(false);
@@ -125,7 +111,7 @@ export const useWallet = () => {
       setError(err.message || 'Failed to connect wallet');
       setIsConnecting(false);
     }
-  }, [checkIfMetaMaskIsInstalled, checkIfCorrectNetwork]);
+  }, [checkIfMetaMaskIsInstalled]);
 
   // Disconnect wallet (local state only)
   const disconnectWallet = useCallback(() => {
@@ -137,7 +123,6 @@ export const useWallet = () => {
       chainId: null,
       provider: null,
       signer: null,
-      isCorrectNetwork: false,
     });
     
     // Clear any localStorage items related to wallet connection if needed
@@ -145,69 +130,6 @@ export const useWallet = () => {
     
     console.log('Wallet disconnected (local state only)');
   }, []);
-
-  // Switch to COTI Testnet
-  const switchToCOTITestnet = useCallback(async () => {
-    try {
-      setError(null);
-      
-      if (!walletState.provider) {
-        setError('Wallet not connected');
-        return;
-      }
-      
-      const { ethereum } = window as any;
-      
-      try {
-        // Try to switch to the network
-        await ethereum.request({
-          method: 'wallet_switchEthereumChain',
-          params: [{ chainId: COTI_TESTNET.chainId }],
-        });
-      } catch (switchError: any) {
-        // This error code indicates that the chain has not been added to MetaMask
-        if (switchError.code === 4902) {
-          try {
-            await ethereum.request({
-              method: 'wallet_addEthereumChain',
-              params: [
-                {
-                  chainId: COTI_TESTNET.chainId,
-                  chainName: COTI_TESTNET.chainName,
-                  nativeCurrency: COTI_TESTNET.nativeCurrency,
-                  rpcUrls: COTI_TESTNET.rpcUrls,
-                  blockExplorerUrls: COTI_TESTNET.blockExplorerUrls,
-                },
-              ],
-            });
-          } catch (addError: any) {
-            setError(addError.message || 'Failed to add COTI Testnet');
-            return;
-          }
-        } else {
-          setError(switchError.message || 'Failed to switch to COTI Testnet');
-          return;
-        }
-      }
-      
-      // Update state after successful network switch
-      const provider = new ethers.providers.Web3Provider(ethereum);
-      const { chainId } = await provider.getNetwork();
-      const chainIdHex = `0x${chainId.toString(16)}`;
-      const signer = provider.getSigner();
-      
-      setWalletState({
-        ...walletState,
-        chainId: chainIdHex,
-        provider,
-        signer,
-        isCorrectNetwork: checkIfCorrectNetwork(chainIdHex),
-      });
-    } catch (err: any) {
-      console.error('Error switching network:', err);
-      setError(err.message || 'Failed to switch network');
-    }
-  }, [walletState, checkIfCorrectNetwork]);
 
   // Initialize wallet state on mount
   useEffect(() => {
@@ -228,7 +150,6 @@ export const useWallet = () => {
             chainId: null,
             provider: null,
             signer: null,
-            isCorrectNetwork: false,
           });
         } else if (walletState.isConnected) {
           // User switched accounts
@@ -245,17 +166,12 @@ export const useWallet = () => {
         if (walletState.isConnected) {
           const provider = new ethers.providers.Web3Provider(ethereum);
           const signer = provider.getSigner();
-          const isCorrectNetwork = checkIfCorrectNetwork(chainIdHex);
-          
-          console.log('Is correct network:', isCorrectNetwork);
-          console.log('Expected chainId:', COTI_TESTNET.chainId);
           
           setWalletState({
             ...walletState,
             chainId: chainIdHex,
             provider,
             signer,
-            isCorrectNetwork,
           });
         }
       };
@@ -268,7 +184,7 @@ export const useWallet = () => {
         ethereum.removeListener('chainChanged', handleChainChanged);
       };
     }
-  }, [walletState, checkIfMetaMaskIsInstalled, checkIfCorrectNetwork]);
+  }, [walletState, checkIfMetaMaskIsInstalled]);
 
   return {
     ...walletState,
@@ -276,7 +192,6 @@ export const useWallet = () => {
     error,
     connectWallet,
     disconnectWallet,
-    switchToCOTITestnet,
   };
 };
 
