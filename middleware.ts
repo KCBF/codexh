@@ -1,9 +1,11 @@
 import { clerkMiddleware, createRouteMatcher } from '@clerk/nextjs/server';
 
-const isProtectedRoute = createRouteMatcher(['/']);
+// Define routes that would benefit from authentication but don't require it
+const isAuthEnabledRoute = createRouteMatcher(['/']);
 
 export default clerkMiddleware(async (auth, req) => {
-  if (isProtectedRoute(req)) await auth.protect();
+  // No longer forcing protection on any routes
+  // Users can access all routes whether logged in or not
 });
 
 export const config = {
