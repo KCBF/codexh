@@ -34,7 +34,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     setMessages([
       {
         role: "assistant",
-        content: "# Welcome to the Vocake AI Assistant! 👋\n\nI'm here to help you with your language learning journey. You can ask me about:\n\n- Vocabulary definitions and examples\n- Grammar explanations\n- Learning strategies\n- Translation assistance\n- Pronunciation tips\n\nHow can I assist you today?"
+        content: "# Welcome to the VocakeX Assistant! 👋\n\nI'm here to help you with your language learning journey. You can ask me about:\n\n- Vocabulary definitions and examples\n- Grammar explanations\n- Learning strategies\n- Translation assistance\n- Pronunciation tips\n\nHow can I assist you today? or anything related to COTI and CodeX CDX!"
       }
     ])
   }, [])
