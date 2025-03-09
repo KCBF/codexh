@@ -7,6 +7,7 @@ import rehypeRaw from "rehype-raw"
 import rehypeSanitize from "rehype-sanitize"
 import rehypeHighlight from "rehype-highlight"
 import remarkGfm from "remark-gfm"
+import { useRouter } from "next/navigation"
 
 import { cn } from "@/lib/utils"
 
@@ -22,6 +23,7 @@ interface Message {
 }
 
 export function ChatForm({ className, ...props }: React.ComponentProps<"form">) {
+  const router = useRouter()
   const [messages, setMessages] = useState<Message[]>([])
   const [input, setInput] = useState("")
   const [isLoading, setIsLoading] = useState(false)
@@ -78,6 +80,34 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
         // Decode the chunk and append to the assistant message
         const chunk = new TextDecoder().decode(value)
         assistantMessage += chunk
+        
+        // Check if the response contains the redirect marker
+        if (assistantMessage.includes("[REDIRECT_TO_ENGLISH_QUIZ]")) {
+          // Remove the redirect marker from the displayed message
+          const cleanMessage = assistantMessage.replace("[REDIRECT_TO_ENGLISH_QUIZ]", "");
+          
+          // Update the UI with the clean message
+          setMessages((prev) => {
+            const newMessages = [...prev];
+            // Check if we already have an assistant message
+            const lastMessage = newMessages[newMessages.length - 1];
+            if (lastMessage && lastMessage.role === "assistant") {
+              // Update the existing assistant message
+              lastMessage.content = cleanMessage;
+              return [...newMessages];
+            } else {
+              // Add a new assistant message
+              return [...newMessages, { role: "assistant", content: cleanMessage }];
+            }
+          });
+          
+          // Set a timeout to allow the user to read the message before redirecting
+          setTimeout(() => {
+            router.push('/english-quiz');
+          }, 2000);
+          
+          break;
+        }
         
         // Update the UI with the current assistant message
         setMessages((prev) => {

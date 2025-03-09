@@ -80,6 +80,20 @@ const Sidebar: React.FC = () => (
           } 
           label="My Notebook" 
         />
+        
+        <NavLink 
+          href="/english-quiz" 
+          icon={
+            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 19.5v-15A2.5 2.5 0 0 1 6.5 2H20v20H6.5a2.5 2.5 0 0 1 0-5H20" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <circle cx="12" cy="10" r="2" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M8 16h8" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M10 12v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+              <path d="M14 12v4" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+            </svg>
+          } 
+          label="English Quiz" 
+        />
       </div>
     </nav>
   </div>
@@ -259,6 +273,13 @@ export default function Page() {
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
+    
+    // Check if the search term contains "learn english" anywhere in the query
+    if (searchTerm.trim().toLowerCase().includes("learn english")) {
+      router.push('/english-quiz');
+      return;
+    }
+    
     if (searchTerm.trim() === '') {
       setSearchResults([]);
       setShowResults(false);

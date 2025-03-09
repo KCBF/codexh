@@ -43,6 +43,17 @@ export async function POST(req: Request) {
       content: msg.content || "",
     }))
 
+    // Check if the latest user message contains "learn english"
+    const latestMessage = validMessages[validMessages.length - 1];
+    if (latestMessage.role === "user" && 
+        latestMessage.content.toLowerCase().includes("learn english")) {
+      // Return a special response that will trigger a redirect
+      return new Response(
+        "I can help you learn English! I'm redirecting you to our interactive English quiz where you can test your knowledge.\n\n[REDIRECT_TO_ENGLISH_QUIZ]",
+        { status: 200 }
+      );
+    }
+
     // Create a stream from OpenAI
     const stream = await openaiClient.chat.completions.create({
       model: process.env.AZURE_OPENAI_DEPLOYMENT || 'gpt-4o',
