@@ -1,21 +1,18 @@
 "use client";
 
-import React, { useState } from "react";
+import React from "react";
 import { MessageCircle, X } from "lucide-react";
 import { ChatForm } from "./chat-form";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
+import { useChatSidebar } from "@/hooks/use-chat-sidebar";
 
 interface ChatSidebarProps {
   className?: string;
 }
 
 const ChatSidebar: React.FC<ChatSidebarProps> = ({ className }) => {
-  const [isOpen, setIsOpen] = useState(false);
-
-  const toggleSidebar = () => {
-    setIsOpen(!isOpen);
-  };
+  const { isOpen, toggleSidebar } = useChatSidebar();
 
   return (
     <>

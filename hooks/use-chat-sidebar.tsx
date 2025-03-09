@@ -11,7 +11,7 @@ interface ChatSidebarStore {
 
 export const useChatSidebar = create<ChatSidebarStore>((set) => ({
   isOpen: false,
-  toggleSidebar: () => set((state) => ({ isOpen: !state.isOpen })),
+  toggleSidebar: () => set((state: { isOpen: boolean }) => ({ isOpen: !state.isOpen })),
   openSidebar: () => set({ isOpen: true }),
   closeSidebar: () => set({ isOpen: false }),
 })); 
