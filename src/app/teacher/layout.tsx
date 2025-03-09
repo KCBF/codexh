@@ -52,17 +52,7 @@ const items = [
     title: 'My List',
     url: 'mylist',
     icon: Inbox,
-  },
-  {
-    title: 'Explore',
-    url: '#',
-    icon: Inbox,
-  },
-  {
-    title: 'Settings',
-    url: '#',
-    icon: Settings,
-  },
+  }
 ];
 
 const layout = ({ children }: { children: ReactNode }) => {
