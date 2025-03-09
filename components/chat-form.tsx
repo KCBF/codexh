@@ -32,7 +32,7 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     setMessages([
       {
         role: "assistant",
-        content: "# Welcome to the CodeX AI Assistant! 👋\n\nI'm here to help you with information about the **CodeX blockchain** project and answer any questions you might have. CodeX is a multichain development solution focused on ease of development, security, scalability, and reliability.\n\nSome topics I can help with:\n- Zero code programming language\n- EVM-to-CosmWasm bridging\n- Proof-of-stake and proof-of-contribution\n- DAO governance\n- Xpander language aggregator\n- Team information and partnerships\n- Company history and recent updates\n\nCodeX was founded in August 2021 in Dubai, UAE, and is led by CEO Bello Andrea, CMO Ika Afifah, and Co-CTO Jason Galvin.\n\nFeel free to ask me anything! Both of us can use **Markdown** in our messages."
+        content: "# Welcome to the Vocake AI Assistant! 👋\n\nI'm here to help you with your language learning journey. You can ask me about:\n\n- Vocabulary definitions and examples\n- Grammar explanations\n- Learning strategies\n- Translation assistance\n- Pronunciation tips\n\nHow can I assist you today?"
       }
     ])
   }, [])
@@ -110,28 +110,28 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
   }
 
   const header = (
-    <header className="m-auto flex max-w-96 flex-col gap-5 text-center">
-      <h1 className="text-2xl font-semibold leading-none tracking-tight">CodeX AI Assistant</h1>
-      <p className="text-muted-foreground text-sm">
-        This AI assistant is knowledgeable about the <span className="text-foreground">CodeX blockchain</span> project and can answer your questions about blockchain technology.
+    <header className="m-auto flex max-w-96 flex-col gap-3 text-center px-4">
+      <h1 className="text-xl font-semibold leading-none tracking-tight">Vocake AI Assistant</h1>
+      <p className="text-muted-foreground text-xs">
+        Ask me anything about language learning, vocabulary, or get help with your studies.
       </p>
-      <p className="text-muted-foreground text-sm">
-        Send a message to start chatting. <strong>Markdown is supported in both user and AI messages!</strong>
+      <p className="text-muted-foreground text-xs">
+        <strong>Markdown is supported in both user and AI messages!</strong>
       </p>
     </header>
   )
 
   const messageList = (
-    <div className="my-4 flex h-fit min-h-full flex-col gap-4">
+    <div className="my-2 flex h-fit min-h-full flex-col gap-3 px-3">
       {messages.map((message, index) => (
         <div
           key={index}
           data-role={message.role || "user"}
           className={cn(
-            "rounded-xl px-4 py-3 text-sm",
+            "rounded-xl px-3 py-2 text-xs",
             message.role === "assistant" 
               ? "self-start max-w-[85%] bg-gray-100 text-black" 
-              : "self-end max-w-[75%] bg-blue-500 text-white"
+              : "self-end max-w-[75%] bg-[#5E89ED] text-white"
           )}
         >
           <div className={cn(
@@ -148,12 +148,12 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
         </div>
       ))}
       {error && (
-        <div className="self-center rounded-xl bg-red-100 px-3 py-2 text-sm text-red-800">
+        <div className="self-center rounded-xl bg-red-100 px-3 py-2 text-xs text-red-800">
           {error}
         </div>
       )}
       {isLoading && (
-        <div className="self-start rounded-xl bg-gray-100 px-3 py-2 text-sm">
+        <div className="self-start rounded-xl bg-gray-100 px-3 py-2 text-xs">
           <span className="animate-pulse">...</span>
         </div>
       )}
@@ -164,22 +164,22 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
     <TooltipProvider>
       <main
         className={cn(
-          "ring-none mx-auto flex h-svh max-h-svh w-full max-w-[35rem] flex-col items-stretch border-none",
+          "ring-none mx-auto flex h-full max-h-full w-full flex-col items-stretch border-none",
           className,
         )}
         {...props}
       >
-        <div className="flex-1 content-center overflow-y-auto px-6">{messages.length ? messageList : header}</div>
+        <div className="flex-1 content-center overflow-y-auto">{messages.length ? messageList : header}</div>
         <form
           onSubmit={handleSubmit}
-          className="border-input bg-background focus-within:ring-ring/10 relative mx-6 mb-6 flex items-center rounded-[16px] border px-3 py-1.5 pr-8 text-sm focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
+          className="border-input bg-background focus-within:ring-ring/10 relative mx-3 mb-3 flex items-center rounded-[12px] border px-2 py-1 pr-7 text-xs focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-0"
         >
           <AutoResizeTextarea
             onKeyDown={handleKeyDown}
             onChange={(value) => setInput(value)}
             value={input || ""}
-            placeholder="Ask about CodeX blockchain (Markdown supported)"
-            className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none"
+            placeholder="Ask about language learning..."
+            className="placeholder:text-muted-foreground flex-1 bg-transparent focus:outline-none text-xs"
             disabled={isLoading}
           />
           <Tooltip>
@@ -187,11 +187,11 @@ export function ChatForm({ className, ...props }: React.ComponentProps<"form">) 
               <Button 
                 variant="ghost" 
                 size="sm" 
-                className="absolute bottom-1 right-1 size-6 rounded-full"
+                className="absolute bottom-1 right-1 size-5 rounded-full"
                 disabled={isLoading || !input.trim()}
                 type="submit"
               >
-                <ArrowUpIcon size={16} />
+                <ArrowUpIcon size={14} />
               </Button>
             </TooltipTrigger>
             <TooltipContent sideOffset={12}>Submit</TooltipContent>

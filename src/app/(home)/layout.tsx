@@ -13,8 +13,7 @@ import {
   SidebarTrigger,
 } from '@/components/ui/sidebar';
 import React, { ReactNode } from 'react';
-import { Home, Inbox, Settings } from 'lucide-react';
-import { Lightbulb } from 'lucide-react';
+import { Home, Inbox } from 'lucide-react';
 import Link from 'next/link';
 import { cn } from '@/lib/utils';
 import { usePathname } from 'next/navigation';
@@ -28,17 +27,7 @@ const items = [
     title: 'My Notebook',
     url: '/my-notebook/word-bank',
     icon: Inbox,
-  },
-  {
-    title: 'Explore',
-    url: '/explore',
-    icon: Lightbulb,
-  },
-  {
-    title: 'Settings',
-    url: '/settings',
-    icon: Settings,
-  },
+  }
 ];
 const Layout = ({ children }: { children: ReactNode }) => {
   const pathName = usePathname();
