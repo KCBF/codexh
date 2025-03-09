@@ -195,7 +195,7 @@ const HomeSearchForm: React.FC<SearchFormProps> = ({ searchTerm, setSearchTerm, 
       type="submit"
       className="h-[50px] px-6 bg-[#FF7A2F] text-white font-medium rounded-r-full"
     >
-      English - Vietnamese
+      Search
     </button>
   </form>
 );

@@ -12,10 +12,38 @@ import Collocations from '@/components/Collocations';
 import WordFamilySynonym from '@/components/WordFamilySynonym';
 import { useState } from 'react';
 import AddWordDialog from '@/components/AddWordToWordBankDialog';
+
 const views = [
   { view: 'collocations', name: 'Collocations' },
   { view: 'word-family-synonym', name: 'Word Family And Synonyms' },
 ];
+
+// Component for the home page search form
+const HomeSearchForm: React.FC<SearchFormProps> = ({ searchTerm, setSearchTerm, handleSearch }) => (
+  <form onSubmit={handleSearch} className="flex items-center">
+    <div className="relative flex-1 max-w-md">
+      <div className="absolute left-4 top-1/2 transform -translate-y-1/2">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M21 21L15 15M17 10C17 13.866 13.866 17 10 17C6.13401 17 3 13.866 3 10C3 6.13401 6.13401 3 10 3C13.866 3 17 6.13401 17 10Z" stroke="#9CA3AF" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        </svg>
+      </div>
+      <input 
+        type="text" 
+        placeholder="Search Vocabulary" 
+        className="w-full h-[50px] pl-12 pr-4 rounded-l-full border-0 focus:outline-none focus:ring-0"
+        value={searchTerm}
+        onChange={(e) => setSearchTerm(e.target.value)}
+      />
+    </div>
+    <button 
+      type="submit"
+      className="h-[50px] px-6 bg-[#FF7A2F] text-white font-medium rounded-r-full"
+    >
+      English - Vietnamese
+    </button>
+  </form>
+);
+
 const Page = () => {
   const [tabView, setTabView] = useState<string>('collocations');
   const handleClickTav = (view: string) => {
