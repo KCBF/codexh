@@ -4,6 +4,7 @@ import { Plus_Jakarta_Sans } from "next/font/google"
 import type { ReactNode } from "react"
 import { ClerkProvider } from "@clerk/nextjs"
 import WalletProvider from "@/providers/WalletProvider"
+import ChatSidebar from "@/components/ChatSidebar"
 
 import './globals.css'
 import '@/styles/markdown.css'
@@ -28,6 +29,7 @@ export default function Layout({ children }: { children: ReactNode }) {
           <TooltipProvider delayDuration={0}>
             <WalletProvider>
               {children}
+              <ChatSidebar />
             </WalletProvider>
           </TooltipProvider>
         </body>
