@@ -1,41 +1,70 @@
-# Azure OpenAI Chatbot
 
-A Next.js chatbot application powered by Azure OpenAI's GPT-4o model.
 
-## Features
+## ✨ Features
 
-- Real-time streaming chat interface
-- Azure OpenAI integration
-- Responsive design
-- Modern UI with Tailwind CSS and Radix UI components
+- **AI-Powered Chat Interface**: Real-time streaming conversations with GPT-4o for language practice
+- **Text-to-Speech**: Natural voice output using Azure OpenAI and ElevenLabs TTS
+- **English Quiz**: Interactive quizzes to test and improve language skills
+- **Personal Notebook**: Save and organize your learning materials
+- **Word Explorer**: Detailed word definitions, usage examples, and pronunciation
+- **User Authentication**: Secure login and registration via Clerk
+- **Responsive Design**: Optimized for desktop and mobile devices
+- **Modern UI**: Built with Tailwind CSS, Radix UI, and shadcn/ui components
 
-## Local Development
+## 🚀 Tech Stack
+
+- **Frontend**: Next.js 15, React 19, TypeScript
+- **State Management**: Redux Toolkit, Zustand
+- **Styling**: Tailwind CSS, shadcn/ui (Radix UI components)
+- **Authentication**: Clerk
+- **AI Integration**: Azure OpenAI, ElevenLabs
+- **Form Handling**: React Hook Form, Zod validation
+- **Markdown Rendering**: React Markdown with syntax highlighting
+
+## 🛠️ Local Development
 
 ### Prerequisites
 
-- Node.js (latest LTS version recommended)
+- Node.js (v18 or later)
 - npm, yarn, or pnpm package manager
 - Azure OpenAI API key and endpoint
+- ElevenLabs API key (for enhanced TTS)
+- Clerk account (for authentication)
 
 ### Setup
 
 1. Clone the repository:
    ```bash
-   git clone <repository-url>
-   cd <repository-directory>
+   git clone https://github.com/yourusername/codexh.git
+   cd codexh
    ```
 
 2. Install dependencies:
    ```bash
-   npm install --legacy-peer-deps
+   npm install
    ```
 
-3. Create a `.env.local` file in the root directory with your Azure OpenAI credentials:
+3. Create a `.env.local` file in the root directory with your API credentials:
    ```
-   AZURE_OPENAI_API_KEY=your-api-key
-   AZURE_OPENAI_ENDPOINT=your-endpoint
-   AZURE_OPENAI_DEPLOYMENT=your-deployment-name
+   # Azure OpenAI API Configuration
+   AZURE_OPENAI_API_KEY=your-azure-openai-api-key
+   AZURE_OPENAI_ENDPOINT=your-azure-openai-endpoint
+   AZURE_OPENAI_DEPLOYMENT=gpt-4o
    AZURE_OPENAI_API_VERSION=2025-01-01-preview
+
+   # Azure OpenAI Audio Configuration
+   AZURE_OPENAI_AUDIO_DEPLOYMENT=gpt-4o-realtime-preview
+   AZURE_OPENAI_TTS_MODEL=tts-1-hd
+
+   # ElevenLabs API Configuration (optional)
+   ELEVENLABS_API_KEY=your-elevenlabs-api-key
+
+   # Clerk Authentication
+   NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY=your-clerk-publishable-key
+   CLERK_SECRET_KEY=your-clerk-secret-key
+   NEXT_PUBLIC_CLERK_SIGN_IN_URL=/sign-in
+   NEXT_PUBLIC_CLERK_SIGN_UP_URL=/sign-up
+   NEXT_PUBLIC_CLERK_AFTER_SIGN_IN_URL=/
    ```
 
 4. Start the development server:
@@ -45,41 +74,45 @@ A Next.js chatbot application powered by Azure OpenAI's GPT-4o model.
 
 5. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-## Deploying to Vercel
+## 📱 Key Features Explained
 
-### Step 1: Push to GitHub
+### AI Chat Interface
+The platform features a sophisticated chat interface that connects to Azure OpenAI's GPT-4o model. Users can have natural conversations to practice language skills, ask questions, and receive instant feedback.
 
-Make sure your code is pushed to a GitHub repository.
+### English Quiz
+Interactive quizzes help users test their knowledge and improve their language skills through practical exercises.
 
-### Step 2: Connect to Vercel
+### Personal Notebook
+Users can save important conversations, vocabulary, and learning materials to their personal notebook for future reference.
 
-1. Sign up or log in to [Vercel](https://vercel.com)
-2. Click "Add New" > "Project"
-3. Import your GitHub repository
-4. Configure the project:
-   - Framework Preset: Next.js
-   - Root Directory: ./
+### Word Explorer
+Detailed information about words including definitions, usage examples, and pronunciation to enhance vocabulary building.
 
-### Step 3: Environment Variables
+## 🚢 Deployment
 
-Add the following environment variables in the Vercel project settings:
+### Deploying to Vercel
 
-- `AZURE_OPENAI_API_KEY`: Your Azure OpenAI API key
-- `AZURE_OPENAI_ENDPOINT`: Your Azure OpenAI endpoint URL
-- `AZURE_OPENAI_DEPLOYMENT`: Your Azure OpenAI deployment name (e.g., "gpt-4o")
-- `AZURE_OPENAI_API_VERSION`: The API version (e.g., "2025-01-01-preview")
+1. Push your code to a GitHub repository.
 
-### Step 4: Deploy
+2. Connect to Vercel:
+   - Sign up or log in to [Vercel](https://vercel.com)
+   - Click "Add New" > "Project"
+   - Import your GitHub repository
+   - Configure the project:
+     - Framework Preset: Next.js
+     - Root Directory: ./
 
-Click "Deploy" and wait for the build to complete.
+3. Environment Variables:
+   Add all the environment variables from your `.env.local` file to the Vercel project settings.
 
-## Security Considerations
+4. Deploy:
+   Click "Deploy" and wait for the build to complete.
 
-- Never commit your `.env.local` file to version control
+## 🔒 Security Considerations
+
+- Never commit your `.env` or `.env.local` files to version control
 - Use environment variables for all sensitive information
 - Vercel automatically encrypts your environment variables
 - Consider implementing rate limiting for production use
+- Regularly update dependencies to patch security vulnerabilities
 
-## License
-
-MIT 
